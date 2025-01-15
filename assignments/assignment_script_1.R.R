@@ -14,3 +14,4 @@ M01 = long_values |> filter(point == "p5")
 ggplot(data = M01, mapping = aes(x = month, y = value)) + geom_point()
 
 # Get the months in order
+ggplot(data = M01, mapping = aes(x = factor(month, month.abb), y = value)) + geom_point()
