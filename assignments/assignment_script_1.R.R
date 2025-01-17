@@ -15,4 +15,4 @@ ggplot(data = M01, mapping = aes(x = month, y = value)) + geom_point()
 
 # Get the months in order and fix axes
 ggplot(data = M01, mapping = aes(x = factor(month, month.abb), y = value)) + geom_point() +
-  xlab("Month") + ylab("SST (C)") + main("RCP4.5 2055 SST at buoy M01")
+  xlab("Month") + ylab("SST (C)") + ggtitle("RCP4.5 2055 SST at buoy M01")
