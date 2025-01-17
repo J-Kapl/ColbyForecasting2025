@@ -25,7 +25,7 @@ As always, we start by running our setup function. Start RStudio/R, and relaod y
 
 ```{r source_setup, warning = FALSE}
 source("setup.R")
-SPECIES = "Mola mola"
+SPECIES = "Xiphias gladius"
 ```
 
 # Observations
@@ -60,8 +60,18 @@ human = obs |>
   slice(1) |>
   browse_obis()
 
+machine = obs |>
+  filter(basisOfRecord == "MachineObservation") |>
+  slice(1) |>
+  browse_obis()
+
 preserved = obs |>
   filter(basisOfRecord == "PreservedSpecimen") |>
+  slice(1) |>
+  browse_obis()
+
+material = obs |>
+  filter(basisOfRecord == "MaterialSample") |>
   slice(1) |>
   browse_obis()
 
@@ -115,7 +125,7 @@ Well now one has to wonder about a single observation of 25 animals. Let's check
 
 ```{r obs_indcount_25}
 obs |>
-  filter(individualCount == 25) |>
+  filter(individualCount == 142) |>
   browse_obis()
 ```
 
@@ -136,7 +146,7 @@ For this species, it seem like it is only the record from 1932 that might be a s
 
 ```{r filter_earlier}
 obs = obs |>
-  filter(year >= 1970)
+  filter(year <= 2013)
 dim(obs)
 ```
 
@@ -219,7 +229,7 @@ We have explored a data set, in particular for *Mola mola*; your species may pre
 
 We went through many steps to filter out records that won't help use model.  We'll need that filtered data many-many-many times in the days ahead.  Wouldn't it be nice if we could sweep all of those filtering steps into a single function, call it `read_observations()`, that simple took care of it all for us?  Yes - that would be really nice!
 
-Open the "read_observations.R" file you'll find in the "functions" directory. We have started it for you. Edit the function so that it appropriately filters your species data set by adding optional arguments (like `minimum_year` has been added).  And then adding the code steps needed to implement that filter.
+Open the "observations.R" file you'll find in the "functions" directory. We have started it for you. Edit the function so that it appropriately filters your species data set by adding optional arguments (like `minimum_year` has been added).  And then adding the code steps needed to implement that filter.
 
 Not every filter needs user input.  For instance, `eventDate` can't be `NA`, and all points must fall within the area covered by the Brickman data. So you can automatically add those filters without any user options. 
 
