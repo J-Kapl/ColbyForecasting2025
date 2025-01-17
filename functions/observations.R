@@ -8,14 +8,16 @@ read_observations = function(scientificname = "Xiphias gladius",
   #' @param scientificname chr, the name of the species to read
   #' @param minimum_year num, the earliest year of observation to accept or 
   #'   set to NULL to skip
+  #' @param maximum_year num, the latest year of observation to accept or 
+  #'   set to NULL to skip
   #' @param ... other arguments passed to `read_obis()`
   #' @return a filtered table of observations
   
   # Happy coding!
   
   # read in the raw data
-  fetch_obis(scientificname)
-  x = read_obis(scientificname, ...)
+  # fetch_obis(scientificname)
+  x = read_obis(scientificname)
   
   # filter out points missing eventDate
   x = x |>
@@ -26,6 +28,14 @@ read_observations = function(scientificname = "Xiphias gladius",
     x = x |>
       filter(year >= minimum_year, year <= maximum_year)
   }
+  
+  # filter out PreservedSpecimens
+  x = x |>
+    filter(basisOfRecord != "PreservedSpecimen")
+  
+  # filter out missing individualCounts
+  x = x |>
+    filter(!is.na(individualCount))
   
   return(x)
 }
