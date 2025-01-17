@@ -226,9 +226,9 @@ More phew!  But that is it!  Now we use a for loop to run through the months, ca
 ```{r for_loop}
 for (this_month in month.abb){
   result = make_model_input_by_month(this_month,
-                                     obs = read_observations(scientificname = "Mola mola"),
+                                     obs = read_observations(scientificname = "Xiphias gladius"),
                                      raster = mask,
-                                     species = "Mola mola",
+                                     species = "Xiphias gladius",
                                      path = data_path("model_input"),
                                      min_obs = 3)
 }
