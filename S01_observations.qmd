@@ -196,6 +196,14 @@ Let's see what our mask looks like with the observations drizzled on top. Becaus
 plot(mask, breaks = "equal", axes = TRUE, reset = FALSE)
 plot(st_geometry(obs), pch = ".", add = TRUE)
 ```
+
+Now I'll try to plot Swordfish geometry by month (order is alphabetical :( )
+```{r}
+coast = read_coastline()
+ggplot(data = obs) + geom_sf(alpha = 0.1, size = 0.7) + geom_sf(data = coast) + facet_wrap(~month)
+```
+
+
 Maybe with proper with squinting we can see some that faal into no-data areas.  The sure-fire way to tell is to extract the mask values at the point locations.
 
 ```{r mask_extract}
