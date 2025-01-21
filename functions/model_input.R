@@ -12,7 +12,7 @@ read_model_input = function(scientificname = "Xiphias gladius",
   
   # save the data
   filename = sprintf("%s-%s-%s_input.gpkg", 
-                     gsub(" ", "_", species),
+                     gsub(" ", "_", scientificname),
                      mon, approach)
   read_sf(file.path(path, filename))
 }
