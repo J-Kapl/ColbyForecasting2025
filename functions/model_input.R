@@ -11,8 +11,15 @@ read_model_input = function(scientificname = "Xiphias gladius",
   # your part goes in here
   
   # save the data
-  filename = sprintf("%s-%s-%s_input.gpkg", 
-                     gsub(" ", "_", scientificname),
+  fname = sprintf("%s-%s-%s_input.gpkg", 
+                     gsub(" ", "_", scientificname, fixed = TRUE),
                      mon, approach)
-  read_sf(file.path(path, filename))
+  filename = file.path(path[1], fname[1])
+  
+  if(!file.exists(filename)){
+    message("file not found:", filename[1])
+    return(NULL)
+  }
+  
+  read_sf(filename)
 }
