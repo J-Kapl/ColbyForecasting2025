@@ -317,3 +317,59 @@ write_prediction(nowcast, file = file.path(path,"g_Dec_RCP45_2020.tif"))
 write_prediction(forecast_rcp45_2055, file = file.path(path, "g_Dec_RCP45_2055.tif"))
 write_prediction(forecast_rcp45_2075, file = file.path(path, "g_Dec_RCP45_2075.tif"))
 ```
+
+# Just write a loop to make them all for 2055
+```{r my_loop}
+for (mon in month.abb){
+cfg = read_configuration(version = sprintf("g_%s", mon))
+db = brickman_database()
+covars = read_brickman(db |> filter(scenario == "PRESENT", interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", mon)
+
+wflow = read_workflow(version = cfg$version)
+
+nowcast = predict_stars(wflow, covars)
+
+coast = read_coastline()
+plot(nowcast['.pred_presence'], main = sprintf("Nowcast %s", mon), 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp85_2055 = read_brickman(db |> filter(scenario == "RCP85", year == 2055, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", mon)
+forecast_rcp85_2055 = predict_stars(wflow, covars_rcp85_2055)
+coast = read_coastline()
+plot(forecast_rcp85_2055['.pred_presence'], main = sprintf("RCP85 2055 %s", mon), 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp45_2055 = read_brickman(db |> filter(scenario == "RCP45", year == 2055, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", mon) 
+forecast_rcp45_2055 = predict_stars(wflow, covars_rcp45_2055)
+
+pred_2055 = c(nowcast, forecast_rcp45_2055, forecast_rcp85_2055, along = list(year = c("2020", "RCP4.5 2055", "RCP8.5 2055")))
+
+plot_coast = function(){
+  plot(coast, col = "orange", lwd = 2, add = TRUE)
+}
+
+plot(pred_2055['.pred_presence'], 
+     hook = plot_coast,
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), join_zlim  = TRUE, reset = FALSE, 
+     main = sprintf("2055 %s", mon))
+
+# make sure the output directory exists
+path = data_path("predictions")
+if (!dir.exists(path)) ok = dir.create(path, recursive = TRUE)
+
+# write individual arrays?
+write_prediction(nowcast, file = file.path(path,sprintf("g_%s_RCP45_2020.tif", mon)))
+write_prediction(forecast_rcp45_2055, file = file.path(path, sprintf("g_%s_RCP45_2055.tif", mon)))
+write_prediction(forecast_rcp85_2055, file = file.path(path, sprintf("g_%s_RCP85_2055.tif", mon)))
+}
+```
+
+
