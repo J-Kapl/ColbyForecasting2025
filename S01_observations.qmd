@@ -177,6 +177,21 @@ ggplot(data = obs,
 
 That's better! So, it may be the for *Mola mola* we might not be able to successfully model in the cold winter months. That's good to keep in mind.
 
+# Counts per month with SST in GoM overlayed
+```{r month_ordered}
+obs = obs |>
+  mutate(month = factor(month, levels = month.abb))
+
+temps = c(8.1, 7.2, 6.5, 7.4, 9.0, 12.7, 17.5, 18.0, 16.6, 14.3, 11.2, 8.5)
+temps_df <- data.frame(month = month.abb, temp = temps)
+
+ggplot(data = obs,
+       mapping = aes(x = month)) + 
+  geom_bar() + 
+  labs(title = "Counts per month") +
+  geom_hline(data = temps_df, mapping = aes(x = month, y = temp), yintercept = 1500)
+```
+
 ## `geometry` 
 
 Last, but certainly not least, we should consider the possibility that some observations might be on shore.  It happens!  We already know that some records included fish that were washed up on shore.  It's possible someone mis-keyed the longitude or latitude when entering the vaklues into the database.  It's alos possible that some observations fall just outside the areas where the Brickman data has values.  To look for these points, we'll load the Brickman mask (defines land vs water. Well, really it defines data vs no-data), and use that for further filtering.
@@ -193,7 +208,7 @@ mask
 Let's see what our mask looks like with the observations drizzled on top. Because the mask only has values of 1 (data) or `NA` (no-data).  You'll note that we only want to plot the locations of the observations, so we strip `obs` of everyhting except its geometery.
 
 ```{r plot_mask}
-plot(mask, breaks = "equal", axes = TRUE, reset = FALSE)
+plot(mask, breaks = "equal", axes = TRUE, reset = FALSE, main = "Swordfish Observations")
 plot(st_geometry(obs), pch = ".", add = TRUE)
 ```
 

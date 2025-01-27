@@ -90,6 +90,22 @@ plot(coast, col = "orange", lwd = 2, add = TRUE)
 ```
 Hmmm, that's pretty different than what the nowcast predicts.
 
+# Let's do August in 2055 for both RCP45 and RCP85
+```{r load_2055_RCP45}
+covars_rcp45_2055 = read_brickman(db |> filter(scenario == "RCP45", year == 2055, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "Aug") 
+
+forecast_Aug_2055 = predict_stars(wflow, covars_rcp45_2075)
+forecast_Aug_2055
+
+coast = read_coastline()
+plot(forecast_Aug_2055['.pred_presence'], main = "RCP45 2055 August", 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+```
+
+
 # Time series
 
 It would be nice to see a time series: current, 2055 and 2075 on the same graphic. Let's load RCP85 2055 data, and make yet another prediction.
@@ -199,3 +215,105 @@ write_prediction(forecast_rcp45_2055, file = file.path(path, "g_Aug_RCP45_2055.t
 write_prediction(forecast_rcp45_2075, file = file.path(path, "g_Aug_RCP45_2075.tif"))
 ```
 
+# Let's try it for an off-peak month like May
+```{r}
+cfg = read_configuration(version = "g_May")
+db = brickman_database()
+covars = read_brickman(db |> filter(scenario == "PRESENT", interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "May")
+
+wflow = read_workflow(version = cfg$version)
+
+nowcast = predict_stars(wflow, covars)
+
+coast = read_coastline()
+plot(nowcast['.pred_presence'], main = "Nowcast May", 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp45_2075 = read_brickman(db |> filter(scenario == "RCP45", year == 2075, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "May")
+forecast_rcp45_2075 = predict_stars(wflow, covars_rcp45_2075)
+coast = read_coastline()
+plot(forecast_rcp45_2075['.pred_presence'], main = "RCP45 2075 May", 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp45_2055 = read_brickman(db |> filter(scenario == "RCP45", year == 2055, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "May") 
+forecast_rcp45_2055 = predict_stars(wflow, covars_rcp45_2055)
+
+rcp45 = c(nowcast, forecast_rcp45_2055, forecast_rcp45_2075, along = list(year = c("2020", "2055", "2075")))
+
+plot_coast = function(){
+  plot(coast, col = "orange", lwd = 2, add = TRUE)
+}
+
+plot(rcp45['.pred_presence'], 
+     hook = plot_coast,
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), join_zlim  = TRUE, reset = FALSE)
+
+# make sure the output directory exists
+path = data_path("predictions")
+if (!dir.exists(path)) ok = dir.create(path, recursive = TRUE)
+
+# write individual arrays?
+write_prediction(nowcast, file = file.path(path,"g_May_RCP45_2020.tif"))
+write_prediction(forecast_rcp45_2055, file = file.path(path, "g_May_RCP45_2055.tif"))
+write_prediction(forecast_rcp45_2075, file = file.path(path, "g_May_RCP45_2075.tif"))
+```
+
+
+# How about December?
+```{r}
+cfg = read_configuration(version = "g_Dec")
+db = brickman_database()
+covars = read_brickman(db |> filter(scenario == "PRESENT", interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "Dec")
+
+wflow = read_workflow(version = cfg$version)
+
+nowcast = predict_stars(wflow, covars)
+
+coast = read_coastline()
+plot(nowcast['.pred_presence'], main = "Nowcast Dec", 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp45_2075 = read_brickman(db |> filter(scenario == "RCP45", year == 2075, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "Dec")
+forecast_rcp45_2075 = predict_stars(wflow, covars_rcp45_2075)
+coast = read_coastline()
+plot(forecast_rcp45_2075['.pred_presence'], main = "RCP45 2075 Dec", 
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), reset = FALSE)
+plot(coast, col = "orange", lwd = 2, add = TRUE)
+
+covars_rcp45_2055 = read_brickman(db |> filter(scenario == "RCP45", year == 2055, interval == "mon")) |>
+  select(all_of(cfg$keep_vars)) |>
+  slice("month", "Dec") 
+forecast_rcp45_2055 = predict_stars(wflow, covars_rcp45_2055)
+
+rcp45 = c(nowcast, forecast_rcp45_2055, forecast_rcp45_2075, along = list(year = c("2020", "2055", "2075")))
+
+plot_coast = function(){
+  plot(coast, col = "orange", lwd = 2, add = TRUE)
+}
+
+plot(rcp45['.pred_presence'], 
+     hook = plot_coast,
+     axes = TRUE, breaks = seq(0, 1, by = 0.1), join_zlim  = TRUE, reset = FALSE)
+
+# make sure the output directory exists
+path = data_path("predictions")
+if (!dir.exists(path)) ok = dir.create(path, recursive = TRUE)
+
+# write individual arrays?
+write_prediction(nowcast, file = file.path(path,"g_Dec_RCP45_2020.tif"))
+write_prediction(forecast_rcp45_2055, file = file.path(path, "g_Dec_RCP45_2055.tif"))
+write_prediction(forecast_rcp45_2075, file = file.path(path, "g_Dec_RCP45_2075.tif"))
+```
