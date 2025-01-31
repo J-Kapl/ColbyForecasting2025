@@ -215,7 +215,7 @@ plot(st_geometry(obs), pch = ".", add = TRUE)
 Now I'll try to plot Swordfish geometry by month (order is alphabetical :( )
 ```{r}
 coast = read_coastline()
-ggplot(data = obs) + geom_sf(alpha = 0.1, size = 0.7) + geom_sf(data = coast) + facet_wrap(~month)
+ggplot(data = obs) + geom_sf(alpha = 0.1, size = 0.7) + geom_sf(data = coast) + facet_wrap(~month) + labs(title = "Swordfish Observations by Month")
 ```
 
 
